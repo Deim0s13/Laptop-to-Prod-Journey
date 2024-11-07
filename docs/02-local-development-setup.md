@@ -185,13 +185,13 @@ REDIS_HOST=localhost
 
 This structure provides a clean way to track your codebase across environments, making version control a powerful tool in your development process.
 
-## Database Setup
+## 2.4 Database Setup
 - Instructions for setting up a local instance of the database within a container.
 - Documentation of environment-specific variables, including secrets management.
 
-# 2.4.1 Setting Up a Local PostgreSQL Database in a Container
+### 2.4.1 Setting Up a Local PostgreSQL Database in a Container
 
-## Using the PostgreSQL Official Image
+#### 2.4.1.1 Using the PostgreSQL Official Image
 We’ll use the official PostgreSQL image to create a local instance. For a straightforward setup, define environment variables directly when running the container to set up the initial database configuration.
 
 ### Command to Start PostgreSQL Container:
@@ -202,3 +202,118 @@ podman run --name mywebstore-db \
   -e POSTGRES_PASSWORD=mywebstore_password \
   -p 5432:5432 \
   -d postgres:13
+  ```
+
+### Flags Explained:
+- `--name`: Names the container (`mywebstore-db`).
+- `-e`: Sets environment variables for initial setup, including database name, user, and password.
+- `-p`: Maps the container’s internal port (5432) to the same port on your local machine for easy access.
+- `-d`: Runs the container in detached mode, allowing it to run in the background.
+
+#### 2.4.1.2 Verify the PostgreSQL Container
+After starting the container, ensure it’s running by listing active containers:
+```bash
+podman ps
+```
+
+You should see `mywebstore-db` listed. You can also check the logs to confirm that PostgreSQL started correctly:
+```bash
+podman logs mywebstore-db
+```
+
+#### 2.4.1.3 Connect to PostgreSQL
+You can connect to the PostgreSQL instance using the `psql` command-line tool or a GUI client like pgAdmin. For example:
+```bash
+psql -h localhost -p 5432 -U mywebstore_user -d mywebstore_db
+```
+
+Enter the password `mywebstore_password` when prompted to access the database.
+
+### 2.4.2 Environment-Specific Variables and Secrets Management
+
+#### 2.4.2.1 Using a .env File
+
+To manage sensitive information such as database credentials, create a `.env` file in the project’s root directory. This file will store environment-specific variables for local development and future deployments in staging and production environments.
+
+### Example `.env` file:
+```plaintext
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=mywebstore_db
+DB_USER=mywebstore_user
+DB_PASSWORD=mywebstore_password
+```
+
+**Note**: Never commit your `.env` file to Git, as it contains sensitive information. Instead, add it to `.gitignore` to ensure it’s not tracked.
+
+### Example `.env.example` file:
+```plaintext
+# .env.example
+DB_HOST=your_database_host
+DB_PORT=5432
+DB_NAME=your_database_name
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
+```
+
+#### 2.4.2.2 Environment-Specific .env Files
+
+For each environment (local, staging, production), you can create separate `.env` files to tailor the configuration. For example:
+
+- **Local**: `DB_HOST=localhost`, with credentials stored locally.
+- **Staging**: Configure credentials specific to the staging database.
+- **Production**: Use secure credentials tailored to your production database.
+
+### 2.4.3 Connecting to PostgreSQL from Code
+
+### Python (Flask) Example using `psycopg2`:
+```python
+import os
+import psycopg2
+
+conn = psycopg2.connect(
+    host=os.getenv("DB_HOST"),
+    port=os.getenv("DB_PORT"),
+    database=os.getenv("DB_NAME"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD")
+)
+```
+
+### Node.js (Express) Example using `pg`:
+```javascript
+const { Client } = require('pg');
+
+const client = new Client({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+});
+
+client.connect();
+```
+
+#### 2.4.3.1 Loadming Environment Variables
+In both examples, make sure to load the environment variables using a library like `dotenv`.
+
+### Python Example:
+```python
+from dotenv import load_dotenv
+load_dotenv()
+```
+
+### Node.js Example:
+```javascript
+require('dotenv').config();
+```
+
+### 2.4.4 Summary of Database Setup
+
+- **Containerized Database**: You have a local PostgreSQL instance running in a container, with configuration managed via environment variables.
+- **Environment Variables**: Use a `.env` file for sensitive data, with an `.env.example` template for easier setup in different environments.
+- **Environment-Specific Configuration**: Separate configurations for local, staging, and production, supporting a consistent and secure deployment pipeline.
+
+This setup ensures that your database is ready for local development while also making it easy to adapt configurations for staging and production.
