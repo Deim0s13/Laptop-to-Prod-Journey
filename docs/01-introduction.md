@@ -130,3 +130,5 @@ List the tools and platforms you’ll use (e.g., GitHub, Podman/Docker, OpenShif
 
 ## Target Audience
 Explain that this document is designed for beginners who want to learn about containerized applications and CI/CD practices.
+
+This project is designed for beginners and early-stage developers interested in cloud-native development, containerization, and CI/CD practices. It’s particularly suited for those with minimal software or DevOps experience who want to understand the end-to-end process of building, deploying, and managing a microservices application across different environments. The documentation aims to provide a step-by-step, hands-on learning journey that’s both practical and accessible.
