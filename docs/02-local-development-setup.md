@@ -1,4 +1,6 @@
 # 2. Local Development Setup
+
+## 2.1 Overview
 This section will guide you through setting up a local development environment on your Apple silicon Mac. The setup will enable you to develop and test a containerized application locally while also ensuring compatibility with x86 architecture. This approach allows you to seamlessly transition the application across different environments, from your Mac to cloud-based x86 systems.
 
 Before starting, you should be familiar with basic command-line operations. We’ll be using tools like VS Code, Podman, and Git, and this guide will provide step-by-step instructions for installing and configuring these tools specifically for an Apple silicon environment.
@@ -194,7 +196,7 @@ This structure provides a clean way to track your codebase across environments, 
 #### 2.4.1.1 Using the PostgreSQL Official Image
 We’ll use the official PostgreSQL image to create a local instance. For a straightforward setup, define environment variables directly when running the container to set up the initial database configuration.
 
-### Command to Start PostgreSQL Container:
+#### Command to Start PostgreSQL Container:
 ```bash
 podman run --name mywebstore-db \
   -e POSTGRES_DB=mywebstore_db \
@@ -204,7 +206,7 @@ podman run --name mywebstore-db \
   -d postgres:13
   ```
 
-### Flags Explained:
+#### Flags Explained:
 - `--name`: Names the container (`mywebstore-db`).
 - `-e`: Sets environment variables for initial setup, including database name, user, and password.
 - `-p`: Maps the container’s internal port (5432) to the same port on your local machine for easy access.
@@ -235,7 +237,7 @@ Enter the password `mywebstore_password` when prompted to access the database.
 
 To manage sensitive information such as database credentials, create a `.env` file in the project’s root directory. This file will store environment-specific variables for local development and future deployments in staging and production environments.
 
-### Example `.env` file:
+#### Example `.env` file:
 ```plaintext
 # Database Configuration
 DB_HOST=localhost
@@ -247,7 +249,7 @@ DB_PASSWORD=mywebstore_password
 
 **Note**: Never commit your `.env` file to Git, as it contains sensitive information. Instead, add it to `.gitignore` to ensure it’s not tracked.
 
-### Example `.env.example` file:
+#### Example `.env.example` file:
 ```plaintext
 # .env.example
 DB_HOST=your_database_host
@@ -267,7 +269,7 @@ For each environment (local, staging, production), you can create separate `.env
 
 ### 2.4.3 Connecting to PostgreSQL from Code
 
-### Python (Flask) Example using `psycopg2`:
+#### Python (Flask) Example using `psycopg2`:
 ```python
 import os
 import psycopg2
@@ -281,7 +283,7 @@ conn = psycopg2.connect(
 )
 ```
 
-### Node.js (Express) Example using `pg`:
+#### Node.js (Express) Example using `pg`:
 ```javascript
 const { Client } = require('pg');
 
@@ -299,13 +301,13 @@ client.connect();
 #### 2.4.3.1 Loadming Environment Variables
 In both examples, make sure to load the environment variables using a library like `dotenv`.
 
-### Python Example:
+#### Python Example:
 ```python
 from dotenv import load_dotenv
 load_dotenv()
 ```
 
-### Node.js Example:
+#### Node.js Example:
 ```javascript
 require('dotenv').config();
 ```
