@@ -90,8 +90,43 @@ Briefly describe the microservices architecture, including the database setup an
 - **Database persistence** is configured for environments like ROSA with persistent volumes for reliable data storage across deployments.
 
 
-## Tech Stack
+## 1.4 Tech Stack
 List the tools and platforms you’ll use (e.g., GitHub, Podman/Docker, OpenShift, ROSA, GitOps, CI/CD pipelines).
+
+### 1.4.1 Frontend Service
+   - **Framework**: React – for building a responsive, component-based UI that can interact easily with backend APIs.
+   - **UI Styling**: Bootstrap – for quick, mobile-friendly, and consistent styling.
+   - **Build Tool**: Vite – for efficient local development and build processes.
+   - **Communication**: REST API (interacts with Product, Cart, and Order services).
+
+### 1.4.2 Product Service
+   - **Backend Framework**: Flask – a lightweight Python framework that supports rapid development of REST APIs, making it easy to handle product-related requests.
+   - **Database**: PostgreSQL – a reliable, relational database that stores product data and supports querying.
+   - **API Format**: REST API (exposing endpoints for product data).
+
+### 1.4.3 Cart Service
+   - **Backend Framework**: Express.js – a fast and lightweight Node.js framework ideal for handling cart interactions.
+   - **Data Store**: Redis – an in-memory data store optimized for temporary data like cart sessions.
+   - **API Format**: REST API (managing the cart data accessible to the frontend and other services).
+
+### 1.4.4 Order Service
+   - **Backend Framework**: Flask – aligns with Product Service to maintain consistency and streamline backend API development.
+   - **Database**: PostgreSQL – stores order data persistently, enabling tracking and historical queries.
+   - **API Format**: REST API (for processing and managing order data).
+
+### 1.4.5 Databases
+   - **Primary Database**: PostgreSQL – used by both the Product and Order services, ensuring reliable data management for core functions.
+   - **Temporary/In-Memory Store**: Redis – used exclusively by the Cart Service for fast access to temporary cart data, optimizing session handling.
+
+### 1.4.6 Containerization and Orchestration
+   - **Container Runtime**: Podman – for managing containers locally, compatible with Docker CLI, and well-suited for Apple silicon.
+   - **Orchestration and Deployment**: OpenShift (with Single Node OpenShift for staging and ROSA for production) – manages containerized microservices at scale.
+   - **Container Registry**: Quay.io or Docker Hub – to host container images, enabling seamless access across environments.
+
+### 1.4.7 CI/CD and GitOps
+   - **Version Control**: GitHub – for hosting code, managing versions, and enabling collaborative development.
+   - **CI/CD Pipelines**: Red Hat OpenShift Pipelines (built on Tekton) – for automating the CI/CD process from development to production.
+   - **GitOps**: Argo CD – implements GitOps practices, automating deployment and configuration management through Git as the single source of truth.
 
 ## Target Audience
 Explain that this document is designed for beginners who want to learn about containerized applications and CI/CD practices.
