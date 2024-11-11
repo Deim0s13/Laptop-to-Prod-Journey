@@ -5,6 +5,8 @@ This section will guide you through setting up a local development environment o
 
 Before starting, you should be familiar with basic command-line operations. We’ll be using tools like VS Code, Podman, and Git, and this guide will provide step-by-step instructions for installing and configuring these tools specifically for an Apple silicon environment.
 
+-----------------------------------------------------------------------------------------------------------------------------------------
+
 ## 2.2 Environment Setup
 - Installation of development tools on Apple silicon (VS Code, Podman, Git, etc.).
 - Configuration details specific to Apple silicon, with considerations for x86 compatibility.
@@ -105,7 +107,9 @@ Run a basic container to ensure everything is working as expected. This verifies
 ```bash
 podman run -d --name test-container my-webstore-image:latest
 ```
-This setup should give you a robust local development environment ready for both Apple silicon and x86 compatibility testing. 
+This setup should give you a robust local development environment ready for both Apple silicon and x86 compatibility testing.
+
+-----------------------------------------------------------------------------------------------------------------------------------------
 
 ## 2.3 Code Structure and Version Control
 - Set up GitHub for version control and introduce environment tagging for local, staging (single-node), and production environments.
@@ -186,6 +190,8 @@ REDIS_HOST=localhost
   - **Production (`main` branch)**: Deploy final, production-ready versions, ensuring this branch is always stable.
 
 This structure provides a clean way to track your codebase across environments, making version control a powerful tool in your development process.
+
+-----------------------------------------------------------------------------------------------------------------------------------------
 
 ## 2.4 Database Setup
 - Instructions for setting up a local instance of the database within a container.

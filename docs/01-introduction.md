@@ -1,5 +1,23 @@
 # 1. Introduction
 
+## 1.1 Overview
+We are building a cloud-native, containerized webstore application using a microservices architecture. The project follows a development lifecycle from local development on Apple silicon to deployment on a single-node OpenShift instance and eventually a ROSA (Red Hat OpenShift on AWS) cluster.
+
+### Key Components
+- **Frontend**: A React application built with Vite.
+- **Backend**: A Flask-based microservice (`product-service`) serving product data.
+- **Database**: Future integration with PostgreSQL and Redis.
+- **Deployment**: Containerization with Podman, with GitOps practices using OpenShift Pipelines and ArgoCD.
+
+### 1.1.1 Current Status
+We have successfully:
+
+- Set up the frontend service using React and Vite.
+- Created a `product-service` using Flask to serve product data.
+- Connected the frontend to the backend service using an environment variable.
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
 ## 1.2 Project Goals
 
 ### 1.2.1 Create a Cloud-Native, Microservices-Based MVP Application
@@ -29,6 +47,8 @@
 ### 1.2.7 Create Documentation for Learning and Reusability
 - **Objective**: Document each step thoroughly to create a learning resource that can help beginners understand cloud-native development and deployment.
 - **Purpose**: Provide a clear, accessible guide for those without a software background to follow along, understand the concepts, and apply them to their own projects.
+
+-----------------------------------------------------------------------------------------------------------------------------------------
 
 ## 1.3 Architecture Overview
 Briefly describe the microservices architecture, including the database setup and interactions.
@@ -89,6 +109,7 @@ Briefly describe the microservices architecture, including the database setup an
 - **Stateless services** (Frontend, Cart, and Product) allow for horizontal scaling as needed.
 - **Database persistence** is configured for environments like ROSA with persistent volumes for reliable data storage across deployments.
 
+-----------------------------------------------------------------------------------------------------------------------------------------
 
 ## 1.4 Tech Stack
 List the tools and platforms you’ll use (e.g., GitHub, Podman/Docker, OpenShift, ROSA, GitOps, CI/CD pipelines).
@@ -129,6 +150,4 @@ List the tools and platforms you’ll use (e.g., GitHub, Podman/Docker, OpenShif
    - **GitOps**: Argo CD – implements GitOps practices, automating deployment and configuration management through Git as the single source of truth.
 
 ## Target Audience
-Explain that this document is designed for beginners who want to learn about containerized applications and CI/CD practices.
-
 This project is designed for beginners and early-stage developers interested in cloud-native development, containerization, and CI/CD practices. It’s particularly suited for those with minimal software or DevOps experience who want to understand the end-to-end process of building, deploying, and managing a microservices application across different environments. The documentation aims to provide a step-by-step, hands-on learning journey that’s both practical and accessible.
