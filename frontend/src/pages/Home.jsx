@@ -7,9 +7,10 @@ function Home() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("Fetching products from the backend...");
+    // Log the API URL to see if the environment variable is being read correctly
+    console.log("API URL:", import.meta.env.VITE_API_URL);
 
-    axios.get(`http://localhost:5001/products`)
+    axios.get(`${import.meta.env.VITE_API_URL}/products`)
       .then(response => {
         console.log("Response data:", response.data);
         setProducts(response.data);
