@@ -1,19 +1,14 @@
 import React from 'react';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-
-const router = createBrowserRouter(
-  [
-    // Define your routes here
-  ],
-  {
-    future: {
-      v7_startTransition: true, // Enable the future flag here
-    },
-  }
-);
+import { Outlet } from 'react-router-dom';
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <div>
+      <h1>Welcome to My Webstore</h1>
+      {/* Outlet renders the nested routes */}
+      <Outlet />
+    </div>
+  );
 }
 
 export default App;
