@@ -191,6 +191,83 @@ REDIS_HOST=localhost
 
 This structure provides a clean way to track your codebase across environments, making version control a powerful tool in your development process.
 
+### 2.3.1 Setup GitHub for Version Control
+
+#### 2.3.1.1 Create a New GitHub Repository
+- Go to GitHub and create a new repository called `my-demo-webstore`.
+- Optionally, initialize the repository with a `README.md` file and a `.gitignore` file, selecting Python and Node.js as base templates (you can further customize this later).
+
+#### 2.3.1.2 Clone the Repository Locally
+- In your terminal, navigate to the root directory of your project (where `my-demo-webstore` is located) and clone your GitHub repository.
+```bash
+git clone https://github.com/your-username/your-repository.git
+cd your-repository
+```
+
+#### 2.3.1.3 Add Project Files to Git
+- Add the entire project structure (folders and files you created earlier) to Git.
+```bash
+git add .
+git commit -m "Initial commit with project structure"
+```
+
+#### 2.3.1.4 Push the Project to GitHub
+- Push your local commits to the GitHub repository.
+```bash
+git push origin main
+```
+
+#### 2.3.1.5 Setting up Git Branches for Environments
+- Set up branches in GitHub to represent different environments:
+  - `main`: Represents the production environment.
+  - `staging`: Represents the staging environment (Single Node OpenShift).
+  - `dev`: Represents the local development environment.
+
+To create branches, use the following commands:
+```bash
+git checkout -b staging
+git push -u origin staging
+
+git checkout -b dev
+git push -u origin dev
+```
+Now, you have a branch structure that matches your deployment environments, making it easier to manage updates across local, staging, and production.
+
+### 2.3.2 Environment Tagging for Local, Staging, and Production
+
+#### 2.3.2.1 Using Git Tags for Versioning
+- As you progress, you’ll use Git tags to mark specific versions. Tags help you keep track of major milestones in the codebase, especially when you’re ready to deploy to staging or production.
+  - For example, you could use a format like `v0.1.0` for initial local development, `v1.0.0-staging` when deploying to staging, and `v1.0.0` for production.
+
+Create a tag with the following command:
+```bash
+git tag -a v0.1.0 -m "Initial version for local development"
+git push origin v0.1.0
+```
+
+#### 2.3.2.2 Enviornment-Specific Files
+- Use an `.env` file to handle environment variables, ensuring each environment (local, staging, production) has its own `.env` configuration.
+- For security, make sure the `.env` file is included in your `.gitignore` file, so sensitive information like API keys and passwords are not tracked in Git.
+
+Example `.env.example` file:
+```bash
+# Database
+DB_HOST=localhost
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+
+# Redis (for cart service)
+REDIS_HOST=localhost
+```
+
+#### 2.3.2.3 Environment-Specific Tags and Branches
+- As you progress through development, use branches to isolate work for each environment and tags to mark stable versions ready for deployment.
+  - **Local Development (`dev` branch)**: Work here for initial testing and building.
+  - **Staging (`staging` branch)**: Push stable features or bug fixes ready for testing on SNO.
+  - **Production (`main` branch)**: Deploy final, production-ready versions, ensuring this branch is always stable.
+
+This structure provides a clean way to track your codebase across environments, making version control a powerful tool in your development process.
+
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 ## 2.4 Database Setup
