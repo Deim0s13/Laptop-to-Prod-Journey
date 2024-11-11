@@ -4,7 +4,7 @@ from .routes import product_bp
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)  # Enable CORS for all routes
+    CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all routes
     app.register_blueprint(product_bp, url_prefix='/products')
     return app
 

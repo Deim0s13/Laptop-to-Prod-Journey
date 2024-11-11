@@ -1,32 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import mockProducts from '../mockProducts';
+import axios from 'axios';
 
 function Home() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Using mock data for now since the backend is not ready
   useEffect(() => {
-    try {
-      // Simulate fetching data with a timeout
-      setTimeout(() => {
-        setProducts(mockProducts);
+    console.log("Fetching products from the backend...");
+
+    axios.get(`http://localhost:5001/products`)
+      .then(response => {
+        console.log("Response data:", response.data);
+        setProducts(response.data);
         setLoading(false);
-      }, 500); // Adding a slight delay to simulate an API call
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setError("Failed to fetch products.");
-      setLoading(false);
-    }
+      })
+      .catch(error => {
+        console.error("Error fetching products:", error);
+        setError("Failed to fetch products.");
+        setLoading(false);
+      });
   }, []);
+
+  console.log("Products state:", products);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="container">
-      <h1>Welcome to My Webstore</h1>
       <div className="row">
         {Array.isArray(products) && products.length > 0 ? (
           products.map((product) => (
