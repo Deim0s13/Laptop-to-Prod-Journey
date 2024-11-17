@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from .models import get_all_products
+from app.models import get_all_products  # Use absolute import
 
 product_bp = Blueprint('products', __name__)
 
