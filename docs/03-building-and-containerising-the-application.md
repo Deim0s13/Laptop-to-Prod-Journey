@@ -181,3 +181,135 @@ git push origin v0.2.0-dev
 ### 3.3.5 Next Steps
 - Document this stage and commit the documentation updates.
 - Proceed to containerise both the frontend and backend services.
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+## 3.4 Containerizing the Application
+In this section, we detail the process of containerizing both the frontend and backend services to ensure they can be deployed consistently across different environments.
+
+### 3.4.1 Containerizing the Product Service
+The `product-service` was containerized using Podman. Here’s how we did it:
+
+#### 3.4.1.1 Dockerfile for the Product Service
+- The `Dockerfile` for the `product-service` is located in the `product-service/` folder and is structured as follows:
+```dockerfile
+# Step 1: Use a lightweight Python image
+FROM python:3.9-slim
+
+# Step 2: Set environment variables for the database
+ENV POSTGRES_USER=admin \
+    POSTGRES_PASSWORD=mydatabasepassword \
+    POSTGRES_HOST=postgres-db \
+    POSTGRES_PORT=5432 \
+    POSTGRES_DB=productdb
+
+ENV PYTHONUNBUFFERED=1
+
+# Step 3: Set the working directory
+WORKDIR /app
+
+# Step 4: Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Step 5: Copy the application code
+COPY app /app/app
+
+# Step 6: Set the Python path
+ENV PYTHONPATH=/app
+
+# Step 7: Install additional dependencies
+RUN pip install python-dotenv
+
+# Step 8: Expose the application port
+EXPOSE 5001
+
+# Step 9: Start the service
+CMD ["python", "-m", "app.__init__"]
+```
+
+#### 3.4.1.2 Building and Running the Product Service Container
+
+To build and run the `product-service` container, we used the following commands:
+
+1. **Build the container image**:
+```bash
+podman build -t laptop-to-prod-journey_frontend .
+```
+
+2. **Run the container**:
+```bash
+podman run -it -p 5173:5173 --rm laptop-to-prod-journey_frontend
+```
+
+3. Accessing the frontend:
+- The frontend is accessible at: `http://localhost:5173`
+
+### 3.4.3 Multi-Container Setup with podman-compose
+We utilized `podman-compose` to manage both the frontend and backend containers together.
+
+#### 3.4.3.1 `podman-compose.yml` File
+Here’s the `podman-compose.yml` file used to manage the multi-container setup:
+```yaml
+version: '3'
+services:
+  postgres-db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: mydatabasepassword
+      POSTGRES_DB: productdb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  product-service:
+    build: ./product-service
+    depends_on:
+      - postgres-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: mydatabasepassword
+      POSTGRES_HOST: postgres-db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: productdb
+    ports:
+      - "5001:5001"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - product-service
+    environment:
+      VITE_API_URL: http://localhost:5001
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres-data:
+```
+
+#### 3.4.3.2 Running the Multi-Container Setup
+
+To spin up the entire application stack, we used:
+```bash
+podman-compose up --build
+```
+
+#### 3.4.4 Testing and Verification
+
+- Access the frontend at `http://localhost:5173` and ensure that it fetches data from the `product-service`.
+- Verify that the products are displayed correctly.
+```bash
+git add .
+git commit -m "feat: containerized frontend and product-service"
+git push origin dev
+git tag -a v0.3.0-dev -m "Containerized frontend and product-service"
+git push origin v0.3.0-dev
+```
+
+#### 3.4.6 Next Steps
+
+- Document the next stages of deployment (e.g., to Single Node OpenShift (SNO) and ROSA).
+- Proceed to develop additional microservices such as `cart-service` and `order-service`.
