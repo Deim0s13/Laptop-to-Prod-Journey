@@ -181,135 +181,104 @@ git push origin v0.2.0-dev
 ### 3.3.5 Next Steps
 - Document this stage and commit the documentation updates.
 - Proceed to containerise both the frontend and backend services.
-
+- 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-## 3.4 Containerizing the Application
-In this section, we detail the process of containerizing both the frontend and backend services to ensure they can be deployed consistently across different environments.
+## 3.4 Testing the Backend
+In this section, we document the initial testing setup and the steps taken to ensure that the backend services are functional and reliable.
 
-### 3.4.1 Containerizing the Product Service
-The `product-service` was containerized using Podman. Here’s how we did it:
+### 3.4.1 Testing Overview
+Testing ensures the robustness of the `product-service` by validating that the `/products` endpoint communicates correctly with the PostgreSQL database and returns the expected output.
 
-#### 3.4.1.1 Dockerfile for the Product Service
-- The `Dockerfile` for the `product-service` is located in the `product-service/` folder and is structured as follows:
-```dockerfile
-# Step 1: Use a lightweight Python image
-FROM python:3.9-slim
+### 3.4.2 Testing Setup
 
-# Step 2: Set environment variables for the database
-ENV POSTGRES_USER=admin \
-    POSTGRES_PASSWORD=mydatabasepassword \
-    POSTGRES_HOST=postgres-db \
-    POSTGRES_PORT=5432 \
-    POSTGRES_DB=productdb
-
-ENV PYTHONUNBUFFERED=1
-
-# Step 3: Set the working directory
-WORKDIR /app
-
-# Step 4: Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Step 5: Copy the application code
-COPY app /app/app
-
-# Step 6: Set the Python path
-ENV PYTHONPATH=/app
-
-# Step 7: Install additional dependencies
-RUN pip install python-dotenv
-
-# Step 8: Expose the application port
-EXPOSE 5001
-
-# Step 9: Start the service
-CMD ["python", "-m", "app.__init__"]
-```
-
-#### 3.4.1.2 Building and Running the Product Service Container
-
-To build and run the `product-service` container, we used the following commands:
-
-1. **Build the container image**:
+#### 3.4.2.1 Branch Setup
+We created a dedicated branch named `add-testing` to add and test the initial unit tests for the backend service:
 ```bash
-podman build -t laptop-to-prod-journey_frontend .
+git checkout -b add-testing
 ```
 
-2. **Run the container**:
+#### 3.4.3.2 Dependencies
+The following dependencies were installed to support testing:
+- **pytest**: For running the tests.
+- **python-dotenv**: To load environment variables.
+
+#### 3.4.3.3 Flask App Configuration for Testing
+We updated the `app/__init__.py` file to include a `create_app` function for testing purposes:
+```python
+def create_app(test_config=None):
+    app = Flask(__name__)
+
+    if test_config:
+        app.config.update(test_config)
+
+    from .routes import product_bp
+    app.register_blueprint(product_bp, url_prefix='/products')
+
+    return app
+```
+
+### 3.4.4 Writing the Test
+
+#### 3.4.4.1 Test Structure
+We created a tests folder in the product-service directory, with the following structure:
+```plaintext
+product-service/
+├── tests/
+│   └── test_routes.py  # Contains the test cases
+```
+
+#### 3.4.4.2 Test CAse for /products
+The following test was implemented in test_routes.py:
+```python
+import pytest
+from app.__init__ import create_app
+
+@pytest.fixture
+def client():
+    app = create_app()
+    with app.test_client() as client:
+        yield client
+
+def test_get_products(client):
+    """Test the /products endpoint."""
+    response = client.get('/products')
+    assert response.status_code == 200
+    assert isinstance(response.json, list)
+```
+
+### 3.4.5 Running the Tests
+To execute the tests, the following command was used:
 ```bash
-podman run -it -p 5173:5173 --rm laptop-to-prod-journey_frontend
+PYTHONPATH=$(pwd) pytest tests/
 ```
 
-3. Accessing the frontend:
-- The frontend is accessible at: `http://localhost:5173`
+Output:
+```plaintext
+============================== test session starts ==============================
+collected 1 item                                                              
 
-### 3.4.3 Multi-Container Setup with podman-compose
-We utilized `podman-compose` to manage both the frontend and backend containers together.
+tests/test_routes.py .                                                [100%]
 
-#### 3.4.3.1 `podman-compose.yml` File
-Here’s the `podman-compose.yml` file used to manage the multi-container setup:
-```yaml
-version: '3'
-services:
-  postgres-db:
-    image: postgres:14
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: mydatabasepassword
-      POSTGRES_DB: productdb
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  product-service:
-    build: ./product-service
-    depends_on:
-      - postgres-db
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: mydatabasepassword
-      POSTGRES_HOST: postgres-db
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: productdb
-    ports:
-      - "5001:5001"
-
-  frontend:
-    build: ./frontend
-    depends_on:
-      - product-service
-    environment:
-      VITE_API_URL: http://localhost:5001
-    ports:
-      - "5173:5173"
-
-volumes:
-  postgres-data:
+=============================== 1 passed in 0.12s ===============================
 ```
 
-#### 3.4.3.2 Running the Multi-Container Setup
-
-To spin up the entire application stack, we used:
-```bash
-podman-compose up --build
+### 3.4.6 Debugging the Application
+To debug route-related issues, the app.url_map was printed to verify route registration:
+```python
+print(app.url_map)
 ```
 
-#### 3.4.4 Testing and Verification
+### 3.4.7 Key Improvements Made
+1. **Resolved 308 Redirects**: Adjusted the `Blueprint` to handle both `/products` and `/products/` by setting `strict_slashes=False` in the route or globally.
 
-- Access the frontend at `http://localhost:5173` and ensure that it fetches data from the `product-service`.
-- Verify that the products are displayed correctly.
-```bash
-git add .
-git commit -m "feat: containerized frontend and product-service"
-git push origin dev
-git tag -a v0.3.0-dev -m "Containerized frontend and product-service"
-git push origin v0.3.0-dev
-```
+2. **Database Integration**: Ensured that the database container starts with `podman-compose` to avoid empty lists being returned.
 
-#### 3.4.6 Next Steps
+### 3.4.8 Current Status
+1. **The `add-testing` Branch Contains**:
+   - A fully functional test for the `/products` endpoint.
+   - Fixes for route definitions and database integration.
 
-- Document the next stages of deployment (e.g., to Single Node OpenShift (SNO) and ROSA).
-- Proceed to develop additional microservices such as `cart-service` and `order-service`.
+2. **Testing Process Confirmed**:
+   - The `/products` endpoint returns a valid JSON array of products fetched from the database.
+   - Testing works seamlessly in the development environment.
