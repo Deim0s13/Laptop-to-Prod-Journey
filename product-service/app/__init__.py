@@ -5,9 +5,10 @@ from .routes import product_bp
 def create_app():
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all routes
-    app.register_blueprint(product_bp, url_prefix='/products')
-    return app
+    app.register_blueprint(product_bp, url_prefix='/products')  # This defines the /products route
 
-if __name__ == '__main__':
-    app = create_app()
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    # Debugging: Print all registered routes
+    with app.app_context():
+        print(app.url_map)
+        
+    return app
